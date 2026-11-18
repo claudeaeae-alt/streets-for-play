@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Streets for Play: Before vs After</title>
+<style>
+:root{--bg:#f6f7f4;--card:#fff;--tx:#1d2a22;--mut:#5b6a60;--bd:#d9ded6;--ac:#1f8a4c;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a16;--card:#1d2620;--tx:#e8efe9;--mut:#9fb0a4;--bd:#2e3b32;--ac:#4cc27f;--bad:#ef6b5b}}
+:root[data-theme="dark"]{--bg:#141a16;--card:#1d2620;--tx:#e8efe9;--mut:#9fb0a4;--bd:#2e3b32;--ac:#4cc27f;--bad:#ef6b5b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:0 0 4px;font-size:1.7rem}h2{font-size:1.15rem;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+canvas{width:100%;height:auto;border-radius:8px;display:block;background:#cfd8c9}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.stat{flex:1;min-width:90px;background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.85rem;color:var(--mut)}
+.stat b{display:block;font-size:1.3rem;color:var(--tx)}
+.bad b{color:var(--bad)}.good b{color:var(--ac)}
+.ctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:8px 16px;font-size:1rem;cursor:pointer}
+button.alt{background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+.tw{overflow-x:auto;margin-top:14px}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:.92rem}
+th,td{border-bottom:1px solid var(--bd);padding:8px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600}
+ul{margin:6px 0 0;padding-left:20px}
+.leg{font-size:.85rem;color:var(--mut);margin-top:6px}
+.card.alarm{border-color:var(--bad);box-shadow:0 0 0 3px var(--bad)}
+</style>
+</head>
+<body>
+<main>
+<h1>Streets for Play</h1>
+<p class="sub">Simulation of the street near ASBL Spire and Shanthinagar Rd: how it works today vs. a child-safe redesign.</p>
+
+<div class="ctl">
+  <button id="go">Pause</button>
+  <button id="reset" class="alt">Restart</button>
+  <label>Traffic: <input type="range" id="traf" min="1" max="10" value="5"> <span id="tv">5</span></label>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Before: today’s street</h2>
+    <canvas id="c0" width="440" height="300"></canvas>
+    <div class="stats">
+      <div class="stat bad">Close calls<b id="n0">0</b></div>
+      <div class="stat">Children crossed<b id="k0">0</b></div>
+      <div class="stat bad">Children hit<b id="h0">0</b></div>
+      <div class="stat bad">Fatalities<b id="f0">0</b></div>
+      <div class="stat">Longest queue<b id="q0">0</b></div>
+      <div class="stat">Cars passed<b id="p0">0</b></div>
+      <div class="stat">Car speed<b>30 km/h+</b></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>After: street for play</h2>
+    <canvas id="c1" width="440" height="300"></canvas>
+    <div class="stats">
+      <div class="stat good">Close calls<b id="n1">0</b></div>
+      <div class="stat">Children crossed<b id="k1">0</b></div>
+      <div class="stat good">Children hit<b id="h1">0</b></div>
+      <div class="stat good">Fatalities<b id="f1">0</b></div>
+      <div class="stat">Longest queue<b id="q1">0</b></div>
+      <div class="stat">Cars passed<b id="p1">0</b></div>
+      <div class="stat">Cars on bypass<b id="d1">0</b></div>
+      <div class="stat">Car speed<b>20 km/h</b></div>
+    </div>
+  </div>
+</div>
+<p class="leg">Red car = fast car. Yellow dot = child. A “close call” is when a child is on the road with a car within a very short distance. A “hit” is when a car actually touches a child (a hit child is knocked sideways and turns red). The faster the car, the more likely a hit is fatal, and a fatally hit child disappears from the simulation.. When a close call happens, the street flashes red with a “CLOSE CALL!” warning and a ring around the child. Both streets start with the same traffic and the same number of children, but on the right street some cars are sent to a bypass road.</p>
+
+<div class="card tw">
+<h2>What changed and why</h2>
+<table>
+<tr><th>Feature</th><th>Before</th><th>After</th><th>Why it helps children</th></tr>
+<tr><td>Crossing</td><td>None, children cross anywhere</td><td>Zebra crossing</td><td>Drivers know where to stop</td></tr>
+<tr><td>Speed</td><td>Fast, no limit</td><td>20 km/h zone with speed breakers</td><td>Slower cars can stop in time</td></tr>
+<tr><td>Footpath</td><td>Shared with cars</td><td>Separate footpath on both sides</td><td>Children walk away from traffic</td></tr>
+<tr><td>Play space</td><td>Small, near the road</td><td>Park with trees, away from the road</td><td>Children play without cars nearby</td></tr>
+<tr><td>Street lights</td><td>Few</td><td>Lights at the crossing</td><td>Visible in the evening</td></tr>
+<tr><td>Crossing signal</td><td>None</td><td>Pedestrian signal with stop lines</td><td>Red tells cars exactly when to stop and green tells them when to go. It only turns red when children are waiting and stays green for a minimum time, so traffic still flows</td></tr>
+<tr><td>Traffic flow</td><td>Cars rush, then jam</td><td>Steady 20 km/h flow</td><td>Cars move evenly instead of speeding and braking, so the “Cars passed” count stays close to the Before street</td></tr>
+<tr><td>Traffic diversion</td><td>All cars use the street</td><td>Some cars (40%) are sent to a bypass road</td><td>Fewer cars on the street means shorter queues and less waiting, and fewer cars near children</td></tr>
+<tr><td>Quick signal cycle</td><td>Not applicable</td><td>Red is short and green returns as soon as children are across</td><td>Cars wait less, so queues do not build up</td></tr>
+<tr><td>Play-street hours</td><td>Not applicable</td><td>Lane closed to cars only at school drop-off and pick-up times</td><td>The road stays fully open the rest of the day</td></tr>
+</table>
+</div>
+
+<div class="card" style="margin-top:14px">
+<h2>How the simulation works</h2>
+<ul>
+<li>Cars appear at random and drive along the road. The traffic slider changes how often.</li>
+<li>Children start at the apartments (top) and walk to the play area (bottom).</li>
+<li>Before: children walk straight across anywhere, and cars never stop.</li>
+<li>After: children walk to the zebra crossing and press the button (wait). The signal turns red, cars stop at the white stop line, and then the children cross.</li>
+<li>When the children are across, the signal turns green again and the cars go. It stays green for a minimum time so traffic is not blocked, and the “Cars passed” counter lets you compare the two streets.</li>
+<li>The program counts every close call so the two streets can be compared fairly.</li>
+<li>On the right street 40% of cars are sent to a bypass road at the top of the picture. The signal also stays red for a short time only, so queues stay short. The “Longest queue” number shows how many cars were stopped at once.</li>
+<li>When a car hits a child, the chance that it is fatal rises quickly with speed. That is why the 20 km/h zone matters.</li>
+</ul>
+</div>
+</main>
+
+<script>
+(function(){
+var W=440,H=300,RY=120,RH=70; // road from y=120 to 190
+function Sim(cv,safe,nEl,kEl){
+  this.cv=cv;this.x=cv.getContext('2d');this.safe=safe;this.nEl=nEl;this.kEl=kEl;this.reset();
+}
+Sim.prototype.reset=function(){this.cars=[];this.kids=[];this.near=0;this.done=0;this.passed=0;this.hits=0;this.dead=0;this.peak=0;this.diverted=0;this.byp=[];this.sig='green';this.sigT=0;this.alarm=0;this.seen={};this.t=0;this.id=0;};
+Sim.prototype.step=function(rate){
+  var s=this.safe;this.t++;
+  if(Math.random()<rate*0.004){var dir=Math.random()<.5?1:-1;
+    if(s&&Math.random()<0.4){this.diverted++;this.byp.push({x:dir>0?-20:W+20,d:dir});}else
+    this.cars.push({id:++this.id,x:dir>0?-30:W+30,y:dir>0?RY+16:RY+RH-26,d:dir,v:0,top:s?1.0:2.6});}
+  if(this.t%90==0){var kx=s?60+Math.random()*320:40+Math.random()*360;
+    this.kids.push({id:++this.id,x:kx,y:70,st:0,w:0});}
+  var cx=W/2,self=this;
+  // kids
+  this.kids.forEach(function(k){
+    var onRoad=k.y>RY-4&&k.y<RY+RH+4;
+    if(k.fly>0){k.x=Math.max(8,Math.min(W-8,k.x+k.vx));k.y+=k.vy;k.vx*=0.94;k.vy*=0.94;k.fly--;if(k.fly==0&&k.dead)k.gone=true;return;}
+    if(s&&k.st==0){ // walk to crossing on footpath
+      var dx=cx-k.x;if(Math.abs(dx)>2){k.x+=Math.sign(dx)*0.9;return;}k.st=1;}
+    if(s&&k.st==1&&k.y>RY-16&&k.y<RY-2&&!k.go){ // wait for the red signal
+      if(self.sig=='red'&&self.sigT>90)k.go=true;else return;}
+    k.y+=0.8;
+    if(k.y>H-45){k.fin=true;}
+  });
+  this.kids=this.kids.filter(function(k){if(k.gone)return false;if(k.fin){self.done++;return false;}return true;});
+  // cars
+  // pedestrian signal: turns red when children are waiting, stays green a minimum time
+  this.sigT++;
+  this.byp.forEach(function(b){b.x+=2.5*b.d;});
+  this.byp=this.byp.filter(function(b){return b.x>-30&&b.x<W+30;});
+  if(s){
+    var waiting=this.kids.some(function(k){return k.st==1&&!k.go&&k.y>RY-16&&k.y<RY-2;});
+    var crossing=this.kids.some(function(k){return k.go&&k.y>RY-16&&k.y<RY+RH+10;});
+    if(this.sig=='green'&&waiting&&this.sigT>200){this.sig='red';this.sigT=0;}
+    else if(this.sig=='red'&&!crossing&&this.sigT>110){this.sig='green';this.sigT=0;}
+  }
+  this.cars.forEach(function(c){
+    var target=c.top;
+    if(s){ // stop for kids on or near crossing
+      var ahead=(cx-c.x)*c.d;
+      // red signal: cars still before the stop line must stop; cars already at the crossing clear it
+      if(self.sig=='red'&&ahead>45&&ahead<95)target=0;
+    }
+    // keep distance to car ahead
+    self.cars.forEach(function(o){if(o!==c&&o.d==c.d){var g=(o.x-c.x)*c.d;if(g>0&&g<38)target=Math.min(target,o.v);}});
+    c.v+=(target-c.v)*0.12;c.x+=c.v*c.d;
+  });
+  var keep=this.cars.filter(function(c){return c.x>-60&&c.x<W+60;});
+  this.passed+=this.cars.length-keep.length;this.cars=keep;
+  // close calls
+  this.kids.forEach(function(k){
+    if(k.y>RY&&k.y<RY+RH)self.cars.forEach(function(c){
+      if(Math.abs(c.x-k.x)<24&&Math.abs(c.y+10-k.y)<22&&c.v>0.6){var key=k.id+'_'+c.id;if(!self.seen[key]){self.seen[key]=1;self.near++;k.hit=18;self.alarm=70;self.alarmTxt='CLOSE CALL!';self.alx=k.x;self.aly=k.y;}
+        if(!k.struck&&Math.abs(c.x-k.x)<20&&k.y>c.y-6&&k.y<c.y+24){k.struck=true;self.hits++;self.alarm=90;self.alarmTxt='CHILD HIT!';self.alx=k.x;self.aly=k.y;k.fly=36;k.vx=c.d*(3+c.v*2);k.vy=-0.8;self.burst=36;
+          if(Math.random()<Math.min(0.9,c.v*c.v*0.12)){k.dead=true;self.dead++;self.alarmTxt='FATAL HIT!';}}}});
+    if(k.hit)k.hit--;
+  });
+  this.nEl.textContent=this.near;this.kEl.textContent=this.done;if(this.pEl)this.pEl.textContent=this.passed;
+  if(this.hEl)this.hEl.textContent=this.hits;
+  if(this.fEl)this.fEl.textContent=this.dead;
+  var q=this.cars.filter(function(c){return c.v<0.15;}).length;if(q>this.peak)this.peak=q;
+  if(this.qEl)this.qEl.textContent=this.peak;
+  if(this.dEl)this.dEl.textContent=this.diverted;
+  if(this.alarm>0)this.alarm--;
+  if(this.card)this.card.classList.toggle('alarm',this.alarm>0);
+};
+Sim.prototype.draw=function(){
+  var x=this.x,s=this.safe,i;
+  x.fillStyle='#cfd8c9';x.fillRect(0,0,W,H);
+  // apartments
+  x.fillStyle='#9aa7b3';for(i=0;i<5;i++)x.fillRect(20+i*85,10,65,42);
+  x.fillStyle='#e9eef2';for(i=0;i<5;i++){x.fillRect(30+i*85,18,10,10);x.fillRect(50+i*85,18,10,10);}
+  // bypass road (right street only)
+  if(s){x.fillStyle='#555a60';x.fillRect(0,0,W,9);x.fillStyle='#fff';x.font='bold 8px system-ui';x.fillText('BYPASS ROAD',6,7);
+    x.fillStyle='#3b7dd8';this.byp.forEach(function(b){x.fillRect(b.x-8,2,16,5);});}
+  // footpaths
+  if(s){x.fillStyle='#e6dcc3';x.fillRect(0,RY-22,W,18);x.fillRect(0,RY+RH+4,W,18);}
+  // road
+  x.fillStyle='#4a4f55';x.fillRect(0,RY,W,RH);
+  x.strokeStyle='#e8e8e8';x.lineWidth=2;x.setLineDash([14,12]);x.beginPath();x.moveTo(0,RY+RH/2);x.lineTo(W,RY+RH/2);x.stroke();x.setLineDash([]);
+  // crossing
+  if(s){x.fillStyle='#f2f2f2';for(i=0;i<7;i++)x.fillRect(W/2-14,RY+4+i*9.2,28,5);
+    x.fillStyle='#e0a100';x.fillRect(W/2-34,RY-30,5,22);x.fillRect(W/2+30,RY-30,5,22);
+    for(i=0;i<3;i++)x.fillRect(80+i*140,RY+RH+4,4,16);
+    x.fillStyle='#fff7c2';x.fillRect(W/2-36,RY-32,9,4);x.fillRect(W/2+28,RY-32,9,4);
+    // speed breakers
+    x.fillStyle='#d4b400';x.fillRect(W/2-70,RY,8,RH);x.fillRect(W/2+62,RY,8,RH);
+    // stop lines and traffic signals
+    var red=this.sig=='red';
+    x.fillStyle='#fff';x.fillRect(W/2-27,RY,3,RH/2);x.fillRect(W/2+24,RY+RH/2,3,RH/2);
+    [[W/2-62,RY-42],[W/2+50,RY+RH+8]].forEach(function(p){
+      x.fillStyle='#222';x.fillRect(p[0],p[1],12,30);
+      x.fillStyle=red?'#ff3b2f':'#5a1b17';x.beginPath();x.arc(p[0]+6,p[1]+8,4.5,0,7);x.fill();
+      x.fillStyle=red?'#1b4a2a':'#3dff7a';x.beginPath();x.arc(p[0]+6,p[1]+22,4.5,0,7);x.fill();});
+    x.fillStyle='rgba(0,0,0,.6)';x.fillRect(0,H-22,W,22);
+    x.fillStyle=red?'#ff6b5e':'#6dff9a';x.font='bold 13px system-ui';
+    x.fillText(red?'SIGNAL RED: cars stop, children cross':'SIGNAL GREEN: cars go',10,H-6);}
+  // play area
+  if(s){x.fillStyle='#7fc48a';x.fillRect(0,RY+RH+24,W,H-RY-RH-24);
+    x.fillStyle='#2f7d46';[40,120,200,320,400].forEach(function(px){x.beginPath();x.arc(px,H-26,12,0,7);x.fill();});
+    x.fillStyle='#e8734a';x.fillRect(250,RY+RH+36,40,10);x.fillStyle='#4a90d9';x.fillRect(255,RY+RH+50,30,6);
+    x.fillStyle='#143';x.font='13px system-ui';x.fillText('Park',16,RY+RH+44);
+  }else{x.fillStyle='#b9c4ae';x.fillRect(0,RY+RH,W,H-RY-RH);
+    x.fillStyle='#7fc48a';x.fillRect(W-110,H-60,90,44);x.fillStyle='#143';x.font='12px system-ui';x.fillText('Small play patch',W-108,H-34);
+    x.fillStyle='#8a6b4a';x.fillRect(30,H-60,70,38);x.fillStyle='#fff';x.fillText('Shop',50,H-37);}
+  // cars
+  this.cars.forEach(function(c){
+    x.fillStyle=s?'#3b7dd8':(c.v>2?'#d63d2e':'#e08a2e');x.fillRect(c.x-16,c.y,32,18);
+    x.fillStyle='#dfeaf5';x.fillRect(c.x+(c.d>0?4:-12),c.y+3,12,12);});
+  // kids
+  this.kids.forEach(function(k){
+    x.fillStyle=k.hit||k.struck?'#ff3b2f':'#ffd400';x.beginPath();x.arc(k.x,k.y,6,0,7);x.fill();
+    x.strokeStyle='#333';x.lineWidth=1;x.stroke();
+    if(k.hit){x.fillStyle='#fff';x.font='bold 12px system-ui';x.fillText('!',k.x-2,k.y-9);}});
+  // impact burst (white starburst, no gore)
+  if(this.burst>0){var r=40-this.burst;x.strokeStyle='#fff';x.lineWidth=3;
+    for(var j=0;j<10;j++){var an=j*Math.PI/5;x.beginPath();x.moveTo(this.alx+Math.cos(an)*r*.5,this.aly+Math.sin(an)*r*.5);x.lineTo(this.alx+Math.cos(an)*r,this.aly+Math.sin(an)*r);x.stroke();}
+    this.burst--;}
+  // visual alarm for a close call
+  if(this.alarm>0){
+    if(Math.floor(this.alarm/6)%2==0){
+      x.strokeStyle='#ff1f1f';x.lineWidth=8;x.strokeRect(4,4,W-8,H-8);
+      x.fillStyle='#ff1f1f';x.fillRect(W/2-100,10,200,30);
+      x.fillStyle='#fff';x.font='bold 17px system-ui';x.textAlign='center';x.fillText('⚠ '+(this.alarmTxt||'CLOSE CALL!'),W/2,31);x.textAlign='left';}
+    x.strokeStyle='#ff1f1f';x.lineWidth=3;x.beginPath();x.arc(this.alx,this.aly,34-this.alarm/3,0,7);x.stroke();}
+};
+var a=new Sim(document.getElementById('c0'),false,document.getElementById('n0'),document.getElementById('k0'));
+var b=new Sim(document.getElementById('c1'),true,document.getElementById('n1'),document.getElementById('k1'));
+a.pEl=document.getElementById('p0');b.pEl=document.getElementById('p1');
+a.card=a.cv.closest('.card');b.card=b.cv.closest('.card');
+a.hEl=document.getElementById('h0');b.hEl=document.getElementById('h1');
+a.fEl=document.getElementById('f0');b.fEl=document.getElementById('f1');
+a.qEl=document.getElementById('q0');b.qEl=document.getElementById('q1');
+b.dEl=document.getElementById('d1');
+var run=true,traf=5;
+function loop(){
+  if(run){for(var i=0;i<2;i++){a.step(traf);b.step(traf);}}
+  a.draw();b.draw();requestAnimationFrame(loop);
+}
+document.getElementById('go').onclick=function(){run=!run;this.textContent=run?'Pause':'Play';};
+document.getElementById('reset').onclick=function(){a.reset();b.reset();};
+document.getElementById('traf').oninput=function(){traf=+this.value;document.getElementById('tv').textContent=this.value;};
+loop();
+})();
+</script>
+</body>
+</html>
